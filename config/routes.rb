@@ -1,9 +1,9 @@
 Depot::Application.routes.draw do
+  resources :faqs
+
   resources :contacts
 
   resources :news
-
-  resources :faqs
 
   resources :line_items
 

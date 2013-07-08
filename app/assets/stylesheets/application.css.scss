@@ -1,9 +1,12 @@
+@import url(http://fonts.googleapis.com/css?family=Freckle+Face);
+
 #banner {
   background: #8A2BE2;
   padding: 10px;
   border-bottom: 2px solid;
-  font: small-caps 40px/40px "Times New Roman", serif;
-  color: #282;
+  font-family: 'Freckle Face', cursive;
+  font-size: 140px;
+  color: #FFFFFF;
   text-align: center;
 
   img {
@@ -15,22 +18,24 @@
   background: #FF1493;
   padding: 10px;
   border-bottom: 2px solid;
-  color: #282;
+  color: #000000;
   text-align: center;
-  font: small-caps 30px/30px "Times New Roman", serif;
+  font-family: 'Freckle Face', cursive;
+  font-size: 50px;
 }
 
 #notice {
-  color: #000 !important;
+  color: #000000 !important;
   border: 2px solid red;
   padding: 1em;
   margin-bottom: 2em;
   background-color: #f0f0f0;
-  font: bold smaller sans-serif;
+  font: bold serif;
+  font-size: 30px;
 }
 
 #columns {
-  background: #141;
+  background: #8A2BE2;
 
   #main {
     margin-left: 17em;
@@ -42,15 +47,16 @@
     float: left;
     padding: 1em 2em;
     width: 13em;
-    background: #141;
+    background: #8A2BE2;
 
     ul {
       padding: 0;
       li {
         list-style: none;
         a {
-          color: #bfb;
-          font-size: small;
+          color: #000000;
+          font-family: helvetica, arial, sans-serif;
+          font-size: 30px;
         }
       }
     }

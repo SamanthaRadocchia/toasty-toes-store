@@ -1,3 +1,3 @@
 class Faq < ActiveRecord::Base
-  attr_accessible :copy
+  # attr_accessible :title, :body
 end

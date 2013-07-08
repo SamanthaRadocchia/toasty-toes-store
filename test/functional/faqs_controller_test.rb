@@ -18,7 +18,7 @@ class FaqsControllerTest < ActionController::TestCase
 
   test "should create faq" do
     assert_difference('Faq.count') do
-      post :create, faq: { copy: @faq.copy }
+      post :create, faq: {  }
     end
 
     assert_redirected_to faq_path(assigns(:faq))
@@ -35,7 +35,7 @@ class FaqsControllerTest < ActionController::TestCase
   end
 
   test "should update faq" do
-    put :update, id: @faq, faq: { copy: @faq.copy }
+    put :update, id: @faq, faq: {  }
     assert_redirected_to faq_path(assigns(:faq))
   end
 
