@@ -178,21 +178,141 @@
         end
     # Also need to edit line item controller to make use of this method
     # Go to app/controllers/line_items_controller.rb and add the following: 
-        @line_item = @cart.add_product(product.id)
+        def create
+          @cart = current_cart
+          product = Product.find(params[:product_id])
+          @line_item = @cart.add_product(product.id)
+          @line_item.product = product
+
+          respond_to do |format|
+            if @line_item.save
+              format.html { redirect_to @line_item.cart,
+                notice: 'Line item was successfully created.' }
+              format.json { render json: @line_item,
+                status: :created, location: @line_item }
+            else
+              format.html { render action: "new" }
+              format.json { render json: @line_item.errors,
+                status: :unprocessable_entity }
+            end
+          end
+        end
+# (3) Update Cart View to display products added to it
+    # go here: app/views/carts/show.html.erb
+    # add the following erb: 
+      <% if notice %>
+      <p id="notice"><%= notice %></p>
+      <% end %>
+
+      <h2>Your Pragmatic Cart</h2>
+      <ul>    
+        <% @cart.line_items.each do |item| %>
+          <li><%= item.product.title %></li>
+        <% end %>
+      </ul>
+# (4) Combine items in cart
+    # run a migration
+      $ rails generate migration combine_items_in_cart
+    # go to depot_g/db/migrate/20110711000005_combine_items_in_cart.rb and put crazy code in there 
+        class CombineItemsInCart < ActiveRecord::Migration
+
+          def up
+            # replace multiple items for a single product in a cart with a single item
+            Cart.all.each do |cart|
+              # count the number of each product in the cart
+              sums = cart.line_items.group(:product_id).sum(:quantity)
+
+              sums.each do |product_id, quantity|
+                if quantity > 1
+                  # remove individual items
+                  cart.line_items.where(product_id: product_id).delete_all
+
+                  # replace with a single item
+                  item = cart.line_items.build(product_id: product_id)
+                  item.quantity = quantity
+                  item.save!
+                end
+              end
+            end
+          end
+
+          def down
+            # split items with quantity>1 into multiple items
+            LineItem.where("quantity>1").each do |line_item|
+              # add individual items
+              line_item.quantity.times do 
+                LineItem.create cart_id: line_item.cart_id,
+                  product_id: line_item.product_id
+              end
+
+              # remove original item
+              line_item.destroy
+            end
+          end
+        end
+    # run rake db:migrate
+      $ rake db:migrate 
+    # edit app/views/carts/show.html.erb to show the quantity 
+      <li><%= item.quantity %> &times; <%= item.product.title %></li>
+# (5) To empty cart items
+    # First add a button the cart view (app/views/carts/show.html.erb)
+      # Add this code 
+        # <%= button_to 'Empty cart', @cart, method: :delete, 
+        # data: { confirm: 'Are you sure?' } %>
+    # Update Controller's destroy method (app/controllers/carts_controller.rb)
+      # Add this code
+        def destroy
+          @cart = current_cart
+          @cart.destroy
+          session[:cart_id] = nil
+
+          respond_to do |format|
+            format.html { redirect_to store_url,
+              notice: 'Your cart is currently empty' }
+            format.json { head :no_content }
+          end
+        end
+# (6) Tidy up the cart CSS (instead of li use a table) and CALCULATE TOTAL 
+  # Calculate total price in cart
+    # add total_price method to line_items model (app/models/line_item.rb)
+      def total_price 
+        product.price * quantity
+      end
+    # add new total_price method to cart model (app/models/cart.rb)
+      def total_price
+        line_items.to_a.sum { |item| item.total_price }
+      end
+  # Tweak css to display total (app/assets/stylesheets/carts.css.scss)
+      .carts {
+        .item_price, .total_line {
+          text-align: right;
+        }
+
+        .total_line .total_cell {
+          font-weight: bold;
+          border-top: 1px solid #595;
+        }
+      }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+#### ERRORS AND ERROR REPORTING ####
+# (1) Intercept Bad Carts and Report on the Problem 
+    # Go here: app/controllers/carts_controller.rb and add the following to the show method:
+        def show
+          begin
+            @cart = Cart.find(params[:id])
+          rescue ActiveRecord::RecordNotFound
+            logger.error "Attempt to access invalid cart #{params[:id]}"
+            redirect_to store_url, notice: 'Invalid cart'
+          else
+            respond_to do |format|
+              format.html # show.html.erb
+              format.json { render json: @cart }
+            end
+          end
+        end
+    # Now the customer will just be redirected back to the catalog page and not see errors
+    # To see errors on the dev side go to development.log in the log directory
 
 
 
