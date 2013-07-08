@@ -1,5 +1,5 @@
 ###############################
-#### CREATING THE DEPOT APP ###
+#### CREATING THE STORE APP ###
 ###############################
 
 #### INITIAL SETUP ###
