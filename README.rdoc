@@ -78,3 +78,127 @@
       # Update application.html.erb (DEFAUL PAGE LAYOUT) to include a banner and a sidebar
       # About YIELD (When we invoke yield, Rails automatically substitutes in the page-specific content)
     # to make this work, rename application.css to application.css.scss and add default css
+# (7) Format the Price using the helper method, number_to_currency()
+    number_to_currency(product.price)
+    # Go to app/views/store/index.html.erb
+    # <span class="price"><%= number_to_currency(product.price) %></span>
+    # this will add a dollar sign to the price 
+
+#### CART CREATION #### 
+# Our application will need to keep track of all the items added to the cart by the buyer. 
+# To do that, we’ll keep a cart in the database and store its unique identifier, cart.id, in the session.
+# Every time a request comes in, we can recover the identity from the session and use it to find the cart in the database.
+# (1) Create a Cart Controller
+    $ rails generate scaffold cart
+# (2) Remember to run rake:db migrate
+    $ rake db:migrate 
+# (3) Store the id of the cart in the session by indexing it with the symbol :cart_id
+    # Go to app/controllers/application_controller.rb and do this:
+        class ApplicationController < ActionController::Base
+          protect_from_forgery
+
+          private
+
+            def current_cart 
+              Cart.find(session[:cart_id])
+            rescue ActiveRecord::RecordNotFound
+              cart = Cart.create
+              session[:cart_id] = cart.id
+              cart
+            end
+        end
+# (4) Generate Models and populate the migrations to create the corresponding tables such that a CART CONTAINS A SET OF PRODUCTS
+    # To create tables for product/cart run the following command
+      $ rails generate scaffold line_item product_id:integer cart_id:integer
+    # Migrate
+      $ rake db: migrate 
+    # The database now has a place to store the relationships between line items, carts, and products.
+# (5) Specify that the cart can have many items
+    # Go to the models > cart.rb and add the following:
+      has_many :line_items, dependent: :destroy # in place of the attr accessor
+# (6) Create a reverse link from line_items.rb to cart.rb such that it belongs to a cart and a product
+    # Go to models > line_items.rb and add the following to class LineItem:
+      belongs_to :product
+      belongs_to :cart
+# (7) Edit the model product.rb to include:
+      has_many :line_items
+      before_destroy :ensure_not_referenced_by_any_line_item
+# (8) Add an "Add to Cart" button to each product 
+    # To do this, you want to use the create action provided by the scaffold generator to CREATE a LINEITEM
+    # Essentially you are creating a new object, LineItem, when you add to the cart
+    # To do so, go here: app/controllers/line_items_controller.rb
+    # We will use the button_to() method
+      button_to()
+    # Add the following to app/views/store/index.html.erb
+      # <%= button_to 'Add to Cart', line_items_path(product_id: product) %>
+# (9) Format the "Add to Cart" button such that it is displayed next to price, not below it (make the button inline)
+    # app/assets/stylesheets/store.css.scss
+# (10) modify the create() method in the line items controller to expect a product id as a form parameter.
+    # app/controllers/line_items_controller.rb
+        def create
+          @cart = current_cart
+          product = Product.find(params[:product_id])
+          @line_item = @cart.line_items.build
+          @line_item.product = product
+
+          respond_to do |format|
+            if @line_item.save
+              format.html { redirect_to @line_item.cart,
+                notice: 'Line item was successfully created.' }
+              format.json { render json: @line_item,
+                status: :created, location: @line_item }
+            else
+              format.html { render action: "new" }
+              format.json { render json: @line_item.errors,
+                status: :unprocessable_entity }
+            end
+          end
+        end
+
+#### CREATE A SMARTER CART ####
+# (1) Associating a count with each product in the cart
+    # Add a new column, "quantity" to the table line_items (# add_XXX_to_TABLE)
+      $ rails generate migration add_quantity_to_line_items quantity:integer
+    # Add default value for this column in the migration file
+      add_column :line_items, :quantity, :integer, default: 1
+    # Migrate
+      $ rake db:migrate 
+# (2) Create method to check whether our list of items already includes the product we’re adding if it does, it bumps the quantity, and if it doesn’t, it builds a new LineItem:
+    # Go to app/models/cart.rb
+    # Create an add_product method for class Cart 
+        def add_product(product_id)
+          # Active Record Method find_by_product_id() (start with find_by and end by column_name)
+          current_item = line_items.find_by_product_id(product_id)
+          if current_item
+            current_item.quantity += 1
+          else
+            current_item = line_items.build(product_id: product_id)
+          end
+          current_item
+        end
+    # Also need to edit line item controller to make use of this method
+    # Go to app/controllers/line_items_controller.rb and add the following: 
+        @line_item = @cart.add_product(product.id)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
