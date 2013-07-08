@@ -1,4 +1,10 @@
 Depot::Application.routes.draw do
+  resources :contacts
+
+  resources :news
+
+  resources :faqs
+
   resources :line_items
 
   resources :carts
