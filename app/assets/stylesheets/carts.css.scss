@@ -3,6 +3,18 @@
     text-align: right;
   }
 
+  .delete_product_button, .total_line {
+    text-align: right;
+  }
+
+  .empty_cart_button, .total_line {
+    text-align: right;
+  }
+
+  .continue_shopping_button, .total_line {
+  	text-align: right;
+  }
+
   .total_line .total_cell {
     font-weight: bold;
     border-top: 1px solid #595;
