@@ -4,7 +4,7 @@
 <html>
 <head>
 <!-- START_HIGHLIGHT -->
-  <title>Pragprog Books Online Store</title>
+  <title>Toasty Toes Furry Socks</title>
 <!-- END_HIGHLIGHT -->
   <%= stylesheet_link_tag    "application", media: "all" %><!-- <label id="code.slt"/> -->
   <%= javascript_include_tag "application" %><!-- <label id="code.jlt"/> -->
@@ -15,15 +15,18 @@
 <!-- START_HIGHLIGHT -->
   <div id="banner">
     <%= image_tag("logo.png") %>
-    <%= @page_title || "Pragmatic Bookshelf" %><!-- <label id="code.depot.e.title"/> -->
+    <%= @page_title || "Toasty Toes" %><!-- <label id="code.depot.e.title"/> -->
+  </div>
+  <div id="banner_subtitle">
+    <%= @page_subtitle || "Furry Socks for EVERY Occasion." %>
   </div>
   <div id="columns">
     <div id="side">
       <ul>
-        <li><a href="http://www....">Home</a></li>
-        <li><a href="http://www..../faq">Questions</a></li>
-        <li><a href="http://www..../news">News</a></li>
-        <li><a href="http://www..../contact">Contact</a></li>
+        <li><%= link_to 'Home', store_path %> </li> 
+        <li><%= link_to 'FAQ', store_path %> </li>
+        <li><%= link_to 'News', store_path %> </li>  
+        <li><%= link_to 'Contact', store_path %> </li> 
       </ul>
     </div>
     <div id="main">

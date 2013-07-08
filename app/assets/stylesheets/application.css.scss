@@ -1,4 +1,3 @@
-
 #banner {
   background: #9c9;
   padding: 10px;
@@ -10,6 +9,15 @@
   img {
     float: left;
   }
+}
+
+#banner_subtitle {
+  background: #9c6;
+  padding: 10px;
+  border-bottom: 2px solid;
+  color: #282;
+  text-align: center;
+  font: small-caps 30px/30px "Times New Roman", serif;
 }
 
 #notice {

@@ -8,7 +8,7 @@
 <table>
 <!-- END_HIGHLIGHT -->
   <% @cart.line_items.each do |item| %>
-<!-- START_HIGHLIGHT -->
+<!-- START PRODUCT LIST  -->
     <tr>
       <td><%= item.quantity %>&times;</td>
       <td><%= item.product.title %></td>
@@ -16,22 +16,21 @@
       <td class="delete_product_button"><%= button_to 'Remove Product', item, method: :delete,
           confirm:"Are you sure you want to remove #{item.product.title} from your cart?" %> </td>
     </tr>
-<!-- END_HIGHLIGHT -->
+<!-- END PRODUCT LIST -->
   <% end %>
-<!-- START_HIGHLIGHT -->
+<!-- START TOTAL LINE -->
   <tr class="total_line">
     <td colspan="2">Total</td>
     <td class="total_cell"><%= number_to_currency(@cart.total_price) %></td>
   </tr>
-<!-- END_HIGHLIGHT -->
-<!-- START_HIGHLIGHT -->
+
 </table>
-<!-- END_HIGHLIGHT -->
+<!-- END TOTAL LINE -->
 
 <table>
   <tr>
     <td class="continue_shopping_button"><%= button_to 'Continue Shopping', store_path %> </td>
     <td class="empty_cart_button"><%= button_to 'Empty cart', @cart, method: :delete,
-        data: { confirm: 'Are you sure?' } %></td>
+        data: { confirm: 'Are you sure you want to empty your cart?' } %></td>
   </tr>
 </table>
